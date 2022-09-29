@@ -11,3 +11,4 @@ msgpack
 asyncio
 bcrypt
 toml
+itsdangerous

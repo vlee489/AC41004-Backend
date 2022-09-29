@@ -13,6 +13,8 @@ from typing import Optional
 
 from app.database import DBConnector
 
+from .models import UserSession, SessionSecurityProfile
+
 
 class SecurityCoordinator:
     """API Security Coordinator"""
@@ -75,7 +77,10 @@ class SecurityCoordinator:
             "first_name": user.first_name,
             "last_name": user.last_name,
             "email": user.email,
-            "company": user.customer_id
+            "company": user.customer_id,
+            "role": user.role,
+
+            "session_expiry": expiry_date.isoformat(),
         }
         if await self._cache_set_key(session_id, session_data):
             request.session['security'] = {"session": session_id}
@@ -90,4 +95,16 @@ class SecurityCoordinator:
         if session_central := request.session.get("security"):
             if session_id := session_central.get("session", ""):
                 await self._cache_delete_key(session_id)
-        request.session.pop("central", {})
+        request.session.pop("security", {})
+
+    async def get_security_profile(self, request: Request) -> Optional[SessionSecurityProfile]:
+        """
+        Get user's security session from profile
+        :param request: User's request
+        :return: Security profile or None
+        """
+        if session_central := request.session.get("security"):
+            if session_data := await self._cache_get_key(session_central.get("session", "")):
+                user_session = UserSession(session_data)
+                return SessionSecurityProfile(session=user_session, database=self.__database)
+
