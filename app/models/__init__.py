@@ -1,0 +1,3 @@
+"""
+FastAPI GET & POST Models
+"""
