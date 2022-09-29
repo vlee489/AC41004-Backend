@@ -24,7 +24,7 @@ class Config:
 
     def __init__(self, config_file: str = "config.toml"):
         self.__config = toml.load(config_file)
-        self.mongo_uri = self.__config["mongoUri"]
+        self.mongo_uri = self.__config["mongo_uri"]
         self.db_name = self.__get_key_or_default(self.__config, "db_name", "dev")
         self.redis_uri = self.__get_key_or_default(self.__config, "redis_uri", "redis://redis:6379/1")
         self.session_secret = self.__config["session_secret"]
