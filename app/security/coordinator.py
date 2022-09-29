@@ -75,7 +75,7 @@ class SecurityCoordinator:
             "first_name": user.first_name,
             "last_name": user.last_name,
             "email": user.email,
-            "companies": user.companies
+            "company": user.customer_id
         }
         if await self._cache_set_key(session_id, session_data):
             request.session['security'] = {"session": session_id}
