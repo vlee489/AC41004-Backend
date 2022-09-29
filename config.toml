@@ -1,0 +1,6 @@
+# Config File
+mongo_uri = ""
+db_name = ""
+redis_uri = ""
+session_secret = ""
+debug = true
