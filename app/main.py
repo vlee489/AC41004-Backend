@@ -42,7 +42,7 @@ def create_app():
     )
     # Set up DB & API connections
     new_app.db = DBConnector(system_variables.mongo_uri, system_variables.db_name)
-    new_app.security = SecurityCoordinator(system_variables.redis_uri, system_variables.session_secret, new_app.db)
+    new_app.security = SecurityCoordinator(system_variables.redis_uri, new_app.db)
 
     # Startup and Shutdown Events
     @new_app.on_event("startup")
