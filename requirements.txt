@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+motor
+sentry-sdk
+dnspython
+pydantic
+cryptography
+aiohttp
+aioredis
+msgpack
+asyncio
+bcrypt
+toml
