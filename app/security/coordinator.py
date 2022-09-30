@@ -64,10 +64,13 @@ class SecurityCoordinator:
         :param password: User's password
         :return: if successful
         """
+        await self.delete_session(request)  # delete existing sessions for user
         if not (user := await self.__database.get_user_via_email(email)):
             return False
         # Check if password is valid
-        if not bcrypt.checkpw(password.encode(), user.password_hash):
+        if not bcrypt.checkpw(password.encode(), user.password_hash.encode()):
+            return False
+        if not (role := await user.get_role()):
             return False
         # If user gets past checks
         session_id = uuid.uuid4().hex
@@ -78,7 +81,7 @@ class SecurityCoordinator:
             "last_name": user.last_name,
             "email": user.email,
             "company": user.customer_id,
-            "role": user.role,
+            "role": role.level,
 
             "session_expiry": expiry_date.isoformat(),
         }

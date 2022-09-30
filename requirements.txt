@@ -12,3 +12,4 @@ asyncio
 bcrypt
 toml
 itsdangerous
+certifi
