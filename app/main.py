@@ -68,11 +68,11 @@ def create_app():
 
     # Routes
 
-    # new_app.include_router(
-    #     user_routes,
-    #     prefix="/user",
-    #     tags=["user"]
-    # )
+    new_app.include_router(
+        session_router,
+        prefix="/session",
+        tags=["session"]
+    )
 
 
     # Define OpenAPI info
@@ -85,6 +85,10 @@ def create_app():
             version="1.0.0",
             routes=new_app.routes,
             tags=[
+                {
+                    "name": "session",
+                    "description": "User session management"
+                }
             ]
         )
         new_app.openapi_schema = openapi_schema

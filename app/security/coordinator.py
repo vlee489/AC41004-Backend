@@ -92,10 +92,12 @@ class SecurityCoordinator:
         :param request: User's request
         :return: None
         """
-        if session_central := request.session.get("security"):
-            if session_id := session_central.get("session", ""):
+        if session_security := request.session.get("security"):
+            if session_id := session_security.get("session", ""):
                 await self._cache_delete_key(session_id)
-        request.session.pop("security", {})
+                request.session.pop("security", {})
+                return True
+        return False
 
     async def get_security_profile(self, request: Request) -> Optional[SessionSecurityProfile]:
         """

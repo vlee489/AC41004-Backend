@@ -3,7 +3,7 @@ uvicorn
 motor
 sentry-sdk
 dnspython
-pydantic
+pydantic[email]
 cryptography
 aiohttp
 aioredis
