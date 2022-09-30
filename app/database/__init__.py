@@ -5,6 +5,8 @@ This file contains shared & core DB functions.
 """
 import motor.motor_asyncio
 import app.database.models as DBModels
+import certifi
+ca = certifi.where()
 
 
 class DBConnector:
@@ -21,7 +23,7 @@ class DBConnector:
 
     async def connect_db(self):
         """Create database connection."""
-        self._mongo_client = motor.motor_asyncio.AsyncIOMotorClient(self._mongo_uri)
+        self._mongo_client = motor.motor_asyncio.AsyncIOMotorClient(self._mongo_uri, tlsCAFile=ca)
         self._db = self._mongo_client[self._db_name]
 
     async def close_mongo_connection(self):

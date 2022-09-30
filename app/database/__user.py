@@ -18,6 +18,6 @@ async def get_user_via_email(self: 'DBConnector', email: str) -> Optional[User]:
     :param email: User's email address
     :return:
     """
-    if result := await self._db.Users.find_one({"email": f"{email}"}):
-        return User(result)
+    if result := await self._db.users.find_one({"email": f"{email}"}):
+        return User(result, self._db)
 
