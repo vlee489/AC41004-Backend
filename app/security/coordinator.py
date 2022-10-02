@@ -81,7 +81,7 @@ class SecurityCoordinator:
             "last_name": user.last_name,
             "email": user.email,
             "company": user.customer_id,
-            "role": role.level,
+            "role_id": role.id,
 
             "session_expiry": expiry_date.isoformat(),
         }

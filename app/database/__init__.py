@@ -31,4 +31,5 @@ class DBConnector:
         self._mongo_client.close()
 
     from app.database.__user import get_user_via_email
+    from app.database.__role import get_role_by_id
 
