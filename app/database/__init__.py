@@ -32,4 +32,5 @@ class DBConnector:
 
     from app.database.__user import get_user_via_email
     from app.database.__role import get_role_by_id
+    from app.database.__customer import get_customer_by_id
 

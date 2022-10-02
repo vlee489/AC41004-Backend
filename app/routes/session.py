@@ -23,3 +23,4 @@ async def logout(request: Request):
     else:
         raise HTTPException(status_code=401, detail="No valid session found")
 
+

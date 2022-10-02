@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, EmailStr
 
 
 class UserProfile(BaseModel):
-    """User Profile"""
+    """User Profile for logged in User"""
     id: str = Field(description="User's ID")
     email: EmailStr = Field(description="User's email")
     first_name: str = Field(description="User's First Name")

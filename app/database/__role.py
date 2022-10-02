@@ -17,7 +17,7 @@ async def get_role_by_id(self: 'DBConnector', role_id: str) -> Optional[UserRole
     :return:
     """
     try:
-        if result := await self._db.roles.find_one({"_id": ObjectId(role_id)}):
+        if result := await self._db.userRoles.find_one({"_id": ObjectId(role_id)}):
             return UserRole(result)
     except InvalidId:
         return None

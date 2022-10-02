@@ -11,7 +11,7 @@ class UserSession:
     last_name: str = field(init=False, default="")
     session_expiry: str = field(init=False, default="")
 
-    role_id: str = field(init=False, default="0")
+    role_id: str = field(init=False, default="")
     customer_id: str = field(init=False, default="")
 
     def __post_init__(self, session_data: dict):
@@ -21,6 +21,6 @@ class UserSession:
         self.first_name = session_data.get("first_name", "")
         self.last_name = session_data.get("last_name", "")
 
-        self.role = session_data.get("role", 0)
+        self.role_id = session_data.get("role_id", 0)
         self.customer_id = session_data.get("customer_id", "")
         self.session_expiry = session_data.get("session_expiry", "")

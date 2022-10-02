@@ -67,7 +67,6 @@ def create_app():
     new_app.add_middleware(SessionMiddleware, secret_key=system_variables.session_secret, max_age=10800)
 
     # Routes
-
     new_app.include_router(
         session_router,
         prefix="/session",
@@ -79,7 +78,6 @@ def create_app():
         prefix="/user",
         tags=["user"]
     )
-
 
     # Define OpenAPI info
     def custom_openapi():
