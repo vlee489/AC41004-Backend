@@ -6,6 +6,7 @@ import motor.motor_asyncio
 
 from .userRole import UserRole
 
+
 @dataclass
 class User:
     """User DB Model"""

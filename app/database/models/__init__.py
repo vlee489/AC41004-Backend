@@ -11,4 +11,4 @@ from .rule import Rule
 from .userRole import UserRole
 from .exception import RuleException
 from .exceptionAudit import ExceptionAudit
-from nonComplianceAudit import NonComplianceAudit
+from .nonComplianceAudit import NonComplianceAudit
