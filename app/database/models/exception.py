@@ -8,6 +8,7 @@ from typing import Optional
 class RuleException:
     init_data: InitVar[dict]
     id: str = field(init=False, default="")
+    customer_id: str = field(init=False, default="")
     rule_id: str = field(init=False, default="")
     last_updated_by: str = field(init=False, default="")
     exception_value: str = field(init=False, default="")
@@ -15,11 +16,12 @@ class RuleException:
     review_date: Optional[datetime] = field(init=False)
     last_updated: Optional[datetime] = field(init=False)
 
-    name: str = field(init=False, default="")
-
     def __post_init__(self, init_data: dict):
         self._id = init_data.get("_id", "")
         self.id = str(self._id)
+
+        self._customer_id = init_data.get("customer_id", "")
+        self.customer_id = str(self._customer_id)
 
         self._rule_id = init_data.get("rule_id", "")
         self.rule_id = str(self._rule_id)
