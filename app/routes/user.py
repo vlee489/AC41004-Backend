@@ -34,12 +34,9 @@ async def get_user_permissions(request: Request, security_profile=Depends(securi
     response = {}
     if security_profile.session.role_id:
         if role := await request.app.db.get_role_by_id(security_profile.session.role_id):
-            print(role)
             response["role"] = asdict(role)
     if security_profile.session.customer_id:
         if customer := await request.app.db.get_customer_by_id(security_profile.session.customer_id):
-            print(customer)
             response["customer"] = asdict(customer)
-        print(response)
-        return response
+    return response
 
