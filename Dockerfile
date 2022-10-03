@@ -1,7 +1,6 @@
-FROM python:3.10
-WORKDIR /code
-COPY ./requirements.txt /code/requirements.txt
-COPY ./config.toml /code/config.toml
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-COPY ./app /code/app
-CMD ["uvicorn", "app.main:app", "--port", "80"]
+FROM tiangolo/uvicorn-gunicorn-fastapi:python3.9
+RUN /usr/local/bin/python -m pip install --upgrade pip
+COPY ./app /app/app
+COPY requirements.txt ./
+COPY config.toml ./
+RUN pip install --no-cache-dir -r requirements.txt
