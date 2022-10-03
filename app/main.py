@@ -2,13 +2,12 @@ from fastapi import Request, FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-import os
 import logging
 import uvicorn
 
-from database import DBConnector
-from security import SecurityCoordinator
-from functions import Config
+from app.database import DBConnector
+from app.security import SecurityCoordinator
+from app.functions import Config
 
 from routes import *
 

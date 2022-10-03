@@ -5,7 +5,7 @@ services:
         restart: unless-stopped
 
     rest-api:
-        build: "/"
+        build: ""
         restart: unless-stopped
         depends_on:
             - traefik
