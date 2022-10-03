@@ -1,0 +1,36 @@
+version: "3.8"
+services:
+    redis:
+        image: "redis:alpine"
+        restart: unless-stopped
+
+    rest-api:
+        build: "/"
+        restart: unless-stopped
+        depends_on:
+            - traefik
+        labels:
+            - "traefik.enable=true"
+            - "traefik.http.routers.whoami.rule=Host(`itp.vlee.me.uk`)"
+            - "traefik.http.routers.whoami.entrypoints=websecure"
+            - "traefik.http.routers.whoami.tls.certresolver=mydnschallenge"
+
+    traefik:
+        image: "traefik:v2.8"
+        container_name: "traefik"
+        env_file: proxy.env
+        command:
+            - "--api.dashboard=false"
+            - "--api.insecure=false"
+            - "--providers.docker=true"
+            - "--providers.docker.exposedbydefault=false"
+            - "--entrypoints.websecure.address=:443"
+            - "--certificatesresolvers.mydnschallenge.acme.dnschallenge=true"
+            - "--certificatesresolvers.mydnschallenge.acme.dnschallenge.provider=cloudflare"
+            - "--certificatesresolvers.mydnschallenge.acme.email=vlee@vlee.me.uk"
+            - "--certificatesresolvers.mydnschallenge.acme.storage=/letsencrypt/acme.json"
+        ports:
+            - "443:443"
+        volumes:
+            - "./letsencrypt:/letsencrypt"
+            - "/var/run/docker.sock:/var/run/docker.sock:ro"
