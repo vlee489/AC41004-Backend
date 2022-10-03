@@ -9,7 +9,7 @@ from app.database import DBConnector
 from app.security import SecurityCoordinator
 from app.functions import Config
 
-from routes import *
+from app.routes import *
 
 system_variables = Config()  # load in config file
 
