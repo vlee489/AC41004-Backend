@@ -25,3 +25,22 @@ async def get_rule_by_id(self: 'DBConnector', rule_id: Union[ObjectId, str]) -> 
     except InvalidId:
         return None
 
+
+async def get_rules_by_resource_type_id(self: 'DBConnector', resource_type_id: Union[ObjectId, str]) -> List[Rule]:
+    """
+    Get list of rules from a resource_type id
+    :param self:
+    :param resource_type_id: resource_type id
+    :return: List of rules that apply to resources
+    """
+    return_list = []
+    try:
+        # If ID is a string turn it into an ObjectID
+        if type(resource_type_id) is str:
+            resource_type_id = ObjectId(resource_type_id)
+        async for rule in self._db.rules.find({"resource_type_id": resource_type_id}):
+            return_list.append(Rule(rule))
+        return return_list
+    except InvalidId:
+        return []
+
