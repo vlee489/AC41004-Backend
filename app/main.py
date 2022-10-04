@@ -78,6 +78,12 @@ def create_app():
         tags=["user"]
     )
 
+    new_app.include_router(
+        account_router,
+        prefix="/account",
+        tags=["account"]
+    )
+
     # Define OpenAPI info
     def custom_openapi():
         if new_app.openapi_schema:
@@ -95,6 +101,10 @@ def create_app():
                 {
                     "name": "user",
                     "description": "User details"
+                },
+                {
+                    "name": "account",
+                    "description": "Account details"
                 }
             ]
         )
