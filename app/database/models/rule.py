@@ -10,5 +10,5 @@ class Rule(Base):
 
     def __post_init__(self, init_data: dict):
         super().__post_init__(init_data)
-        self.resource_type_id = init_data.get("resource_type_id", "")
+        self.resource_type_id = init_data.get("type_id", "")
 

@@ -9,6 +9,18 @@ from bson.errors import InvalidId
 from app.database.models import Rule
 
 
+async def get_all_rules(self: 'DBConnector') -> List[Rule]:
+    """
+    Get all rules
+    :param self:
+    :return: List of rules
+    """
+    return_list = []
+    async for rule in self._db.rules.find({}):
+        return_list.append(Rule(rule))
+    return return_list
+
+
 async def get_rule_by_id(self: 'DBConnector', rule_id: Union[ObjectId, str]) -> Optional[Rule]:
     """
     Get rule by ID

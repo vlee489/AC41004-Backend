@@ -84,6 +84,12 @@ def create_app():
         tags=["account"]
     )
 
+    new_app.include_router(
+        rule_overview_router,
+        prefix="/ruleOverview",
+        tags=["rule overview"]
+    )
+
     # Define OpenAPI info
     def custom_openapi():
         if new_app.openapi_schema:

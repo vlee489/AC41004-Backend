@@ -1,6 +1,7 @@
 """Handles Resources"""
 from __future__ import annotations
 from typing import TYPE_CHECKING, List, Union, Optional
+
 if TYPE_CHECKING:
     from .__init__ import DBConnector
 from bson import ObjectId
@@ -45,3 +46,48 @@ async def get_resources_by_account_id(self: 'DBConnector', account_id: Union[Obj
         return []
 
 
+async def get_non_compliant_resources_by_account_id(self: 'DBConnector', account_id: Union[ObjectId, str]) -> \
+        List[Resource]:
+    """
+    Get non compliant Resources with the Account ID
+    :param self:
+    :param account_id: Account's ID
+    :return: list of resources for account that aren't compliant
+    """
+    resources = []
+    try:
+        # If ID is a string turn it into an ObjectID
+        if type(account_id) is str:
+            account_id = ObjectId(account_id)
+        resource_cursor = self._db.resources.aggregate([
+            {
+                '$match': {
+                    'account_id': account_id
+                }
+            }, {
+                '$lookup': {
+                    'from': 'nonCompliances',
+                    'localField': '_id',
+                    'foreignField': 'resource_id',
+                    'as': 'non_compliance'
+                }
+            }, {
+                '$match': {
+                    'non_compliance': {
+                        '$exists': True,
+                        '$not': {
+                            '$size': 0
+                        }
+                    }
+                }
+            }, {
+                '$unwind': {
+                    'path': '$non_compliance'
+                }
+            }
+        ])
+        async for r in resource_cursor:
+            resources.append(Resource(r))
+        return resources
+    except InvalidId:
+        return []

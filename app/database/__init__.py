@@ -6,6 +6,7 @@ This file contains shared & core DB functions.
 import motor.motor_asyncio
 import app.database.models as DBModels
 import certifi
+
 ca = certifi.where()  # Used to deal with TLS certs not loading correctly on certain platforms
 
 
@@ -33,9 +34,9 @@ class DBConnector:
     from app.database.__user import get_user_via_email
     from app.database.__role import get_role_by_id
     from app.database.__customer import get_customer_by_id
-    from app.database.__rule import get_rule_by_id
+    from app.database.__rule import get_rule_by_id, get_all_rules, get_rules_by_resource_type_id
     from app.database.__account import get_account_by_customer_id
     from app.database.__platform import get_platform_by_id
-    from app.database.__resources import get_resource_by_id, get_resources_by_account_id
-
-
+    from app.database.__resources import get_resource_by_id, get_resources_by_account_id, \
+        get_non_compliant_resources_by_account_id
+    from app.database.__resourceType import get_resource_type_by_id
