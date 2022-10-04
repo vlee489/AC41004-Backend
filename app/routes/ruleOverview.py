@@ -15,7 +15,9 @@ router = APIRouter(responses={
 @router.get('/{account_id}', response_model=List[RuleOverview])
 async def get_rule_overview(request: Request, account_id: str, security_profile=Depends(security_authentication)):
     """Get an overview of rules"""
-    # TODO CHECK USER HAS ACCESS TO ACCOUNT
+    # Check if user has permission
+    if not (await security_profile.check_permissions(resource_account_id=account_id, level=0)):
+        HTTPException(status_code=403, detail="Invalid Permissions")
     rules = await request.app.db.get_all_rules()
     resources = await request.app.db.get_non_compliant_resources_by_account_id(account_id)
     return_list = []

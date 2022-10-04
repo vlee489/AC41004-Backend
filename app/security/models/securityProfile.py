@@ -17,13 +17,23 @@ class SessionSecurityProfile:
     async def check_permissions(self, **kwargs) -> bool:
         """
         Check if user has permission to resource & action
-        :key required_level (int): Required level for resource
-        :key customer_resource_id (str): customer ID of resource
+        :key level (int): Required level for resource
+        :key resource_customer_id (str): customer ID of resource
+        :key resource_account_id (str): account ID of resource
         :return: if permission is granted to resource and action
         """
         required_level: int = kwargs.get("level")
-        customer_resource_id: str = kwargs.get("customer_resource_id")
-        if customer_resource_id == self.session.customer_id:
+        resource_customer_id: str = kwargs.get("resource_customer_id", None)
+        resource_account_id: str = kwargs.get("resource_account_id", None)
+
+        cont = False  # Continue
+        if resource_customer_id and (resource_customer_id == self.session.customer_id):
+            cont = True
+        elif resource_account_id:
+            if account := await self.__db.get_account_by_id(resource_account_id):
+                if account.customer_id == self.session.customer_id:
+                    cont = True
+        if cont:
             role = await self.__get_role()
             if role and required_level:
                 if role.level >= required_level:

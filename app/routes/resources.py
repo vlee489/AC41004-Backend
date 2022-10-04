@@ -15,8 +15,10 @@ router = APIRouter(responses={
 @router.get('/{resource_id}', response_model=Resource)
 async def get_resource(request: Request, resource_id: str, security_profile=Depends(security_authentication)):
     """Get details of a resource"""
-    # TODO CHECK USER HAS ACCESS TO ACCOUNT
     if resource := await request.app.db.get_resource_by_id(resource_id):
+        # Check if user has permission
+        if not (await security_profile.check_permissions(resource_account_id=resource.account_id, level=0)):
+            HTTPException(status_code=403, detail="Invalid Permissions")
         account = await request.app.db.get_account_by_id(resource.account_id)
         resource_type = await request.app.db.get_resource_type_by_id(resource.resource_type_id)
         if (not account) and (not resource_type):
