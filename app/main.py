@@ -71,7 +71,7 @@ def create_app():
     )
 
     # Add session middleware
-    new_app.add_middleware(SessionMiddleware, secret_key=system_variables.session_secret, max_age=10800)
+    new_app.add_middleware(SessionMiddleware, secret_key=system_variables.session_secret, max_age=10800, same_site="none")
 
     # Routes
     new_app.include_router(
