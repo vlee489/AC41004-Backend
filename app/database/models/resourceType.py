@@ -13,3 +13,10 @@ class ResourceType(Base):
 
         self._platform_id = init_data.get("platform_id", "")
         self.platform_id = str(self._platform_id)
+
+    def api_response(self, platform: dict) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "platform": platform
+        }

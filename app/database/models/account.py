@@ -36,3 +36,12 @@ class Account(Base):
         :return:
         """
         return self._customer_id
+
+    def api_response(self, customer: dict, platform: dict) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "reference": self.reference,
+            "platform": platform,
+            "customer": customer
+        }

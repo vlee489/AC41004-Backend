@@ -21,7 +21,7 @@ async def get_resource_by_id(self: 'DBConnector', resource_id: Union[ObjectId, s
         # If ID is a string turn it into an ObjectID
         if type(resource_id) is str:
             resource_id = ObjectId(resource_id)
-        if document := self._db.resources.find_one({"_id": resource_id}):
+        if document := await self._db.resources.find_one({"_id": resource_id}):
             return Resource(document)
     except InvalidId:
         return None

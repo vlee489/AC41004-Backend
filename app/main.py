@@ -90,6 +90,12 @@ def create_app():
         tags=["rule overview"]
     )
 
+    new_app.include_router(
+        resource_router,
+        prefix="/resource",
+        tags=["resource"]
+    )
+
     # Define OpenAPI info
     def custom_openapi():
         if new_app.openapi_schema:
