@@ -36,5 +36,6 @@ class DBConnector:
     from app.database.__rule import get_rule_by_id
     from app.database.__account import get_account_by_customer_id
     from app.database.__platform import get_platform_by_id
+    from app.database.__resources import get_resource_by_id, get_resources_by_account_id
 
 
