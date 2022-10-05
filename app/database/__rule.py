@@ -1,12 +1,13 @@
 """Handles Rules"""
 from __future__ import annotations
 from typing import TYPE_CHECKING, List, Union, Optional
+
 if TYPE_CHECKING:
     from .__init__ import DBConnector
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from app.database.models import Rule
+from app.database.models import Rule, RuleResourceTypePipeline
 
 
 async def get_all_rules(self: 'DBConnector') -> List[Rule]:
@@ -56,3 +57,45 @@ async def get_rules_by_resource_type_id(self: 'DBConnector', resource_type_id: U
     except InvalidId:
         return []
 
+
+async def rules_by_resource_type_pipeline(self: 'DBConnector', resource_type_id: Union[ObjectId, str]) -> \
+        List[RuleResourceTypePipeline]:
+    return_list = []
+    try:
+        # If ID is a string turn it into an ObjectID
+        if type(resource_type_id) is str:
+            resource_type_id = ObjectId(resource_type_id)
+        rule_cursor = self._db.rules.aggregate([
+            {
+                '$match': {
+                    'type_id': resource_type_id
+                }
+            }, {
+                '$lookup': {
+                    'from': 'resourceTypes',
+                    'localField': 'type_id',
+                    'foreignField': '_id',
+                    'as': 'resource_type'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$resource_type'
+                }
+            }, {
+                '$lookup': {
+                    'from': 'platforms',
+                    'localField': 'resource_type.platform_id',
+                    'foreignField': '_id',
+                    'as': 'resource_type.platform'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$resource_type.platform'
+                }
+            }
+        ])
+        async for rule_aggregation in rule_cursor:
+            return_list.append(RuleResourceTypePipeline(rule_aggregation))
+        return return_list
+    except InvalidId:
+        return []

@@ -1,4 +1,4 @@
-"""Routes for user login & logout"""
+"""Routes for rules overview"""
 from fastapi import APIRouter, Request, HTTPException, Depends, Query
 from typing import List
 from dataclasses import asdict

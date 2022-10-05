@@ -105,6 +105,12 @@ def create_app():
         tags=["resource"]
     )
 
+    new_app.include_router(
+        rule_router,
+        prefix="/rule",
+        tags=["rule"]
+    )
+
     # Define OpenAPI info
     def custom_openapi():
         if new_app.openapi_schema:
@@ -126,6 +132,10 @@ def create_app():
                 {
                     "name": "account",
                     "description": "Account details"
+                },
+                {
+                    "name": "rule",
+                    "description": "Rule details"
                 }
             ]
         )
