@@ -35,7 +35,7 @@ class SessionSecurityProfile:
                     cont = True
         if cont:
             role = await self.__get_role()
-            if role and required_level:
-                if role.level >= required_level:
+            if (role is not None) and (required_level is not None):
+                if required_level <= role.level:
                     return True
         return False
