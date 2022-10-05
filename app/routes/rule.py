@@ -17,8 +17,8 @@ async def ger_resource_rules(request: Request, resource_id: str, security_profil
     """Get rules for a resource"""
     if resource := await request.app.db.get_resource_by_id(resource_id):
         # Check if user has permission
-        # if not (await security_profile.check_permissions(resource_account_id=resource.account_id, level=0)):
-        #     HTTPException(status_code=403, detail="Invalid Permissions")
+        if not (await security_profile.check_permissions(resource_account_id=resource.account_id, level=0)):
+            HTTPException(status_code=403, detail="Invalid Permissions")
         rules_aggregation = await request.app.db.rules_by_resource_type_pipeline(resource.resource_type_id)
         non_compliance = await request.app.db.get_non_complaince_by_resource_id(resource.id)
         # List Comprehension to get list of rules non-compliant
