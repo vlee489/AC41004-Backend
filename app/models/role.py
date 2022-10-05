@@ -6,3 +6,4 @@ class Role(BaseModel):
     id: str = Field(description="Customer's ID")
     name: str = Field(description="Customer's Name")
     level: int = Field(description="Role's system access Level")
+

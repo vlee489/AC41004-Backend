@@ -8,16 +8,16 @@ ca = certifi.where()
 URI = os.getenv("MONGOURI")
 
 resource_map = {
-    1: ObjectId("633ad142a938b45d958ae754"),
-    2: ObjectId("633ad142a938b45d958ae755"),
-    3: ObjectId("633ad142a938b45d958ae756"),
-    4: ObjectId("633ad142a938b45d958ae757"),
-    5: ObjectId("633ad142a938b45d958ae758"),
-    6: ObjectId("633ad142a938b45d958ae759"),
-    7: ObjectId("633ad142a938b45d958ae75a"),
-    10: ObjectId("633ad142a938b45d958ae75b"),
-    11: ObjectId("633ad142a938b45d958ae75c"),
-    12: ObjectId("633ad142a938b45d958ae75d"),
+    1: ObjectId("633ad142a938b45d958ae754"),  # EC2
+    2: ObjectId("633ad142a938b45d958ae755"),  # EBS
+    3: ObjectId("633ad142a938b45d958ae756"),  # ASG
+    4: ObjectId("633ad142a938b45d958ae757"),  # EFS
+    5: ObjectId("633ad142a938b45d958ae758"),  # APP-ELB
+    6: ObjectId("633ad142a938b45d958ae759"),  # ENI
+    7: ObjectId("633ad142a938b45d958ae75a"),  # LAMBDA
+    10: ObjectId("633ad142a938b45d958ae75b"),  # RDS
+    11: ObjectId("633ad142a938b45d958ae75c"),  # ELB
+    12: ObjectId("633ad142a938b45d958ae75d"),  # S3
 }
 
 client = pymongo.MongoClient(URI, tlsCAFile=ca)
