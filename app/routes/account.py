@@ -50,4 +50,20 @@ async def get_user_accounts(request: Request, security_profile=Depends(security_
         return return_list  # return list of accounts
 
 
+@router.get("/{account_id}", response_model=Account)
+async def get_account_by_id(request: Request, account_id: str, security_profile=Depends(security_authentication)):
+    """Get a single user account by customer id"""
+    if not (await security_profile.check_permissions(resource_account_id=account_id, level=0.0)):
+        raise HTTPException(status_code=403, detail="Invalid Permissions")
+    if not (account := await request.app.db.get_account_by_id(account_id)):
+        raise HTTPException(status_code=404, detail="Resource not found")
+    platform = await request.app.db.get_platform_by_id(account.platform_id)
+    customer = await request.app.db.get_customer_by_id(account.customer_id)
+    return {
+        "id": account_id,
+        "name": account.name,
+        "reference": account.reference,
+        "customer": customer,
+        "platform": platform,
+    }
 
