@@ -5,7 +5,7 @@ from .account import Account
 from .customer import Customer
 from .nonCompliance import NonCompliance
 from .platform import Platform
-from .resource import Resource
+from .resource import Resource, NonComplaintResourceCount
 from .resourceType import ResourceType
 from .rule import Rule
 from .userRole import UserRole
