@@ -58,3 +58,12 @@ class User:
     async def get_role(self) -> Optional[UserRole]:
         if role := await self.__db.userRoles.find_one({"_id": self._role_id}):
             return UserRole(role)
+
+    @property
+    def exception_user(self) -> dict:
+        return {
+            "id": self.id,
+            "email": self.email,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+        }
