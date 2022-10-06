@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from app.database.models import Resource
+from app.database.models import Resource, NonComplaintResourceCount
 
 
 async def get_resource_by_id(self: 'DBConnector', resource_id: Union[ObjectId, str]) -> Optional[Resource]:
@@ -91,3 +91,41 @@ async def get_non_compliant_resources_by_account_id(self: 'DBConnector', account
         return resources
     except InvalidId:
         return []
+
+
+async def get_overview_count_by_account_id(self: 'DBConnector', account_id: Union[ObjectId, str]) -> \
+        Optional[NonComplaintResourceCount]:
+    try:
+        # If ID is a string turn it into an ObjectID
+        if type(account_id) is str:
+            account_id = ObjectId(account_id)
+        compliant = 0
+        non_compliant = 0
+        resource_cursor = self._db.resources.aggregate([
+            {
+                '$match': {
+                    'account_id': ObjectId('633ad7aca938b45d958ae772')
+                }
+            }, {
+                '$lookup': {
+                    'from': 'nonCompliances',
+                    'localField': '_id',
+                    'foreignField': 'resource_id',
+                    'as': 'non_complainces'
+                }
+            }, {
+                '$project': {
+                    'non_complaint_rules': {
+                        '$size': '$non_complainces'
+                    }
+                }
+            }
+        ])
+        async for r in resource_cursor:
+            if r['non_complaint_rules'] > 0:
+                non_compliant += 1
+            else:
+                compliant += 1
+        return NonComplaintResourceCount(compliant, non_compliant)
+    except InvalidId:
+        return None

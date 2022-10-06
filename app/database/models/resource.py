@@ -31,3 +31,7 @@ class Resource(Base):
             self.non_compliance = NonCompliance(init_data["non_compliance"])
 
 
+@dataclass
+class NonComplaintResourceCount:
+    compliant: int
+    non_compliant: int
