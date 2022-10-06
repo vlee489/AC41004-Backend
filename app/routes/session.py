@@ -1,7 +1,7 @@
 """Routes for user login & logout"""
 from fastapi import APIRouter, Request, HTTPException, Depends, Query
 
-from app.models import LoginResponse, LoginCredentials
+from app.models.sessionLogin import LoginResponse, LoginCredentials
 
 router = APIRouter()
 
