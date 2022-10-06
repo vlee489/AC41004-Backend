@@ -12,7 +12,7 @@ async def add_exception(
         customer_id: Union[ObjectId, str],
         rule_id: Union[ObjectId, str],
         last_updated_by: Union[ObjectId, str],
-        exception_value: Union[ObjectId, str],
+        exception_value: str,
         justification: str,
         review_date: datetime,
         last_updated: datetime
@@ -23,8 +23,6 @@ async def add_exception(
         rule_id = ObjectId(rule_id)
     if type(last_updated_by) == str:
         last_updated_by = ObjectId(last_updated_by)
-    if type(exception_value) == str:
-        exception_value = ObjectId(exception_value)
     return (await self._db.exceptions.insert_one({
         "customer_id": customer_id,
         "rule_id": rule_id,

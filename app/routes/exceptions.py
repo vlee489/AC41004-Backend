@@ -32,7 +32,7 @@ async def add_exception(
         customer_id=account.customer_id,
         rule_id=exception.rule_id,
         last_updated_by=security_profile.session.id,
-        exception_value=exception.resource_id,
+        exception_value=exception.exception_value,
         justification=exception.justification,
         review_date=exception.review_date,
         last_updated=datetime.now()
