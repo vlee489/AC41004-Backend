@@ -111,6 +111,12 @@ def create_app():
         tags=["rule"]
     )
 
+    new_app.include_router(
+        compliance_router,
+        prefix="/compliance",
+        tags=["compliance"]
+    )
+
     # Define OpenAPI info
     def custom_openapi():
         if new_app.openapi_schema:
@@ -136,6 +142,10 @@ def create_app():
                 {
                     "name": "rule",
                     "description": "Rule details"
+                },
+                {
+                    "name": "compliance",
+                    "description": "Compliance details"
                 }
             ]
         )
