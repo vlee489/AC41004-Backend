@@ -112,6 +112,12 @@ def create_app():
     )
 
     new_app.include_router(
+        compliance_router,
+        prefix="/compliance",
+        tags=["compliance"]
+    )
+    
+    new_app.include_router(
         exception_router,
         prefix="/exceptions",
         tags=["exceptions"]
@@ -148,6 +154,10 @@ def create_app():
                 {
                     "name": "rule",
                     "description": "Rule details"
+                },
+                {
+                    "name": "compliance",
+                    "description": "Compliance details"
                 },
                 {
                     "name": "rule overview",

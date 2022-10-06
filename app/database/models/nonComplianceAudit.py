@@ -18,6 +18,9 @@ class NonComplianceAudit:
         self._id = init_data.get("_id", "")
         self.id = str(self._id)
 
+        self._resource_id = init_data.get("resource_id", "")
+        self.resource_id = str(self._resource_id)
+
         self._user_id = init_data.get("user_id", "")
         self.user_id = str(self._user_id)
 
