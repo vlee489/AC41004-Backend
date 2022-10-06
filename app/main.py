@@ -116,6 +116,18 @@ def create_app():
         prefix="/compliance",
         tags=["compliance"]
     )
+    
+    new_app.include_router(
+        exception_router,
+        prefix="/exceptions",
+        tags=["exceptions"]
+    )
+
+    new_app.include_router(
+        account_overview_router,
+        prefix="/accountOverview",
+        tags=["account overview"]
+    )
 
     # Define OpenAPI info
     def custom_openapi():
@@ -146,6 +158,22 @@ def create_app():
                 {
                     "name": "compliance",
                     "description": "Compliance details"
+                },
+                {
+                    "name": "rule overview",
+                    "description": "Rule overview"
+                },
+                {
+                    "name": "resource",
+                    "description": "Resource details"
+                },
+                {
+                    "name": "exceptions",
+                    "description": "Rule Exceptions for resource"
+                },
+                {
+                    "name": "account overview",
+                    "description": "account overview stats"
                 }
             ]
         )

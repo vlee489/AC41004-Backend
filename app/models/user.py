@@ -19,3 +19,21 @@ class UserProfile(BaseModel):
                 "session_expiry": "2015-11-27T00:29:06.839600-05:00"
             }
         }
+
+
+class ExceptionUser(BaseModel):
+    """User Profile for Exception"""
+    id: str = Field(description="User's ID")
+    email: EmailStr = Field(description="User's email")
+    first_name: str = Field(description="User's First Name")
+    last_name: str = Field(description="User's Last Name")
+
+    class Config:
+        schema_extra = {
+            "example": {
+                "id": "6336e3470bb7de25d225190b",
+                "email": "test@test.co.uk",
+                "first_name": "Bob",
+                "last_name": "blogs",
+            }
+        }
