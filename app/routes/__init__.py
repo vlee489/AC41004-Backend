@@ -6,3 +6,4 @@ from .ruleOverview import router as rule_overview_router
 from .resources import router as resource_router
 from .rule import router as rule_router
 from .ruleExceptions import router as exception_router
+from .accountOverview import router as account_overview_router

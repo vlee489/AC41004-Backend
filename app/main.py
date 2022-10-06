@@ -117,6 +117,12 @@ def create_app():
         tags=["exceptions"]
     )
 
+    new_app.include_router(
+        account_overview_router,
+        prefix="/accountOverview",
+        tags=["account overview"]
+    )
+
     # Define OpenAPI info
     def custom_openapi():
         if new_app.openapi_schema:
@@ -154,6 +160,10 @@ def create_app():
                 {
                     "name": "exceptions",
                     "description": "Rule Exceptions for resource"
+                },
+                {
+                    "name": "account overview",
+                    "description": "account overview stats"
                 }
             ]
         )
