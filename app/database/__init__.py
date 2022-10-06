@@ -42,3 +42,4 @@ class DBConnector:
         get_non_compliant_resources_by_account_id
     from app.database.__resourceType import get_resource_type_by_id
     from app.database.__nonCompliance import get_non_complaince_by_resource_id, get_non_complaince_by_rule_id
+    from app.database.__exception import add_exception

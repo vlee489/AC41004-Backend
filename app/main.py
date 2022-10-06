@@ -111,6 +111,12 @@ def create_app():
         tags=["rule"]
     )
 
+    new_app.include_router(
+        exception_router,
+        prefix="/exception",
+        tags=["exception"]
+    )
+
     # Define OpenAPI info
     def custom_openapi():
         if new_app.openapi_schema:
@@ -136,6 +142,10 @@ def create_app():
                 {
                     "name": "rule",
                     "description": "Rule details"
+                },
+                {
+                    "name": "exception",
+                    "description": "Exception details"
                 }
             ]
         )
