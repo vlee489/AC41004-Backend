@@ -9,6 +9,7 @@ from .platform import Platform
 from .customer import Customer
 from .user import User
 from .exception import RuleException
+from .resource import Resource
 
 
 @dataclass
@@ -43,4 +44,13 @@ class ExceptionPipeline:
             self.user = User(init_data['last_updated_by_user'], database)
         if 'rule' in init_data:
             self.rule_resource_type = RuleResourceTypePipeline(init_data['rule'])
+
+
+@dataclass
+class AccountExceptionPipeline(ExceptionPipeline):
+    resource: Optional[Resource] = field(init=False, default=None)
+
+    def __post_init__(self, init_data: dict, database: motor.motor_asyncio.AsyncIOMotorDatabase):
+        super().__post_init__(init_data, database)
+        self.resource = Resource(init_data.get('resource', None))
 

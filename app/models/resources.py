@@ -13,3 +13,10 @@ class Resource(BaseModel):
     last_updated: datetime = Field(description="Time resource was last updated")
     metadata: dict = Field(description="Resource's metadata")
 
+
+class ExceptionResource(BaseModel):
+    """Resource's details for exceptions"""
+    reference: str = Field("Resource platform reference")
+    resource_type: ResourceType = Field(description="resource's type")
+    last_updated: datetime = Field(description="Time resource was last updated")
+    metadata: dict = Field(description="Resource's metadata")
