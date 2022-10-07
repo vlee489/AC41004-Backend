@@ -11,7 +11,7 @@ router = APIRouter(responses={
 })
 
 
-@router.post("/exemption/{exemption_id}", response_model=List[ExceptionAudit])
+@router.get("/exemption/{exemption_id}", response_model=List[ExceptionAudit])
 async def get_exception_audit_by_exemption_id(request: Request, exemption_id: str,
                                               security_profile=Depends(security_authentication)):
     """Get audit list for exemption"""
