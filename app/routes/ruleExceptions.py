@@ -155,7 +155,7 @@ async def add_exception(
         exception: AddExceptionRequest,
         security_profile=Depends(security_authentication)
 ):
-    account = await __get_and_check_ids(request, exception.resource_id, exception.rule_id)
+    account = await __get_account_and_check_ids(request, exception.resource_id, exception.rule_id)
     inserted_id = await request.app.db.add_exception(
         customer_id=account.customer_id,
         rule_id=exception.rule_id,
@@ -168,23 +168,32 @@ async def add_exception(
     return {"inserted_id": str(inserted_id)}
 
 
-@router.post("/edit/{exception_id}", response_model=EditExceptionResponse)
-async def edit_exception(
+@router.post("/{exception_id}/edit", response_model=EditExceptionResponse)
+async def update_exception(
         request: Request,
         exception: EditExceptionRequest,
+        exception_id: str,
         security_profile=Depends(security_authentication),
 ):
-    account = await __get_and_check_ids(request, exception.resource_id, exception.rule_id)
-    await request.app.db.edit_exception(
-
+    account = await __get_account_and_check_ids(request, security_profile, exception.resource_id, exception.rule_id)
+    await request.app.db.update_exception(
+        exception_id=exception_id,
+        customer_id=account.customer_id,
+        rule_id=exception.rule_id,
+        last_updated_by=security_profile.session.id,
+        exception_value=exception.exception_value,
+        justification=exception.justification,
+        review_date=exception.review_date,
+        last_updated=datetime.now()
     )
+    return {"status": True}
 
 
-async def __get_and_check_ids(
+async def __get_account_and_check_ids(
         request: Request,
+        security_profile: Depends,
         resource_id: str,
         rule_id: str,
-        security_profile=Depends(security_authentication)
 ) -> Account:
     # Getting all the required details
     if not (resource := await request.app.db.get_resource_by_id(resource_id)):
@@ -198,4 +207,4 @@ async def __get_and_check_ids(
     if not await request.app.db.get_rule_by_id(rule_id):
         raise HTTPException(status_code=404, detail="Rule not found")
 
-    return resource
+    return account

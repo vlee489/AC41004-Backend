@@ -216,3 +216,39 @@ async def add_exception(
         "review_date": review_date,
         "last_updated": last_updated
     })).inserted_id
+
+
+async def update_exception(
+        self: 'DBConnector',
+        exception_id: Union[ObjectId, str],
+        customer_id: Union[ObjectId, str],
+        rule_id: Union[ObjectId, str],
+        last_updated_by: Union[ObjectId, str],
+        exception_value: Optional[str],
+        justification: Optional[str],
+        review_date: Optional[datetime],
+        last_updated: datetime
+):
+    if type(exception_id) == str:
+        exception_id = ObjectId(exception_id)
+    if type(customer_id) == str:
+        customer_id = ObjectId(customer_id)
+    if type(rule_id) == str:
+        rule_id = ObjectId(rule_id)
+    if type(last_updated_by) == str:
+        last_updated_by = ObjectId(last_updated_by)
+    update = {
+        "_id": exception_id,
+        "customer_id": customer_id,
+        "rule_id": rule_id,
+        "last_updated_by": last_updated_by,
+        "last_updated": last_updated
+    }
+    if exception_value is not None:
+        update["exception_value"] = exception_value
+    if justification is not None:
+        update["justification"] = justification
+    if review_date is not None:
+        update["review_date"] = review_date
+
+    await self._db.exceptions.update_one({"_id": exception_id}, {"$set": update})
