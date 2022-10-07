@@ -10,6 +10,7 @@ from .customer import Customer
 from .user import User
 from .exception import RuleException
 from .resource import Resource
+from .exceptionAudit import ExceptionAudit
 
 
 @dataclass
@@ -53,4 +54,26 @@ class AccountExceptionPipeline(ExceptionPipeline):
     def __post_init__(self, init_data: dict, database: motor.motor_asyncio.AsyncIOMotorDatabase):
         super().__post_init__(init_data, database)
         self.resource = Resource(init_data.get('resource', None))
+
+
+@dataclass
+class ExceptionAuditPipeline:
+    init_data: InitVar[dict]
+    database: InitVar[motor.motor_asyncio.AsyncIOMotorDatabase]
+    exception_audit: Optional[ExceptionAudit] = field(init=False, default=None)
+    exception: Optional[RuleException] = field(init=False, default=None)
+    customer: Optional[Customer] = field(init=False, default=None)
+    user: Optional[User] = field(init=False, default=None)
+    rule_resource_type: Optional[RuleResourceTypePipeline] = field(init=False, default=None)
+
+    def __post_init__(self, init_data: dict, database: motor.motor_asyncio.AsyncIOMotorDatabase):
+        self.exception_audit = ExceptionAudit(init_data)
+        if "exception" in init_data:
+            self.exception = RuleException(init_data['customer'])
+        if "customer" in init_data:
+            self.customer = Customer(init_data['customer'])
+        if 'user' in init_data:
+            self.user = User(init_data['user'], database)
+        if 'rule' in init_data:
+            self.rule_resource_type = RuleResourceTypePipeline(init_data['rule'])
 
