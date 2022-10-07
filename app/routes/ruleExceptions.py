@@ -1,12 +1,17 @@
 """Routes for user rules"""
-from fastapi import APIRouter, Request, HTTPException, Depends, Query
-from typing import List, Optional, Union
 from dataclasses import asdict
 from datetime import datetime
 from datetime import timedelta
+from typing import List, Union
 
-from app.security import security_authentication
+from fastapi import APIRouter, Request, HTTPException, Depends
+
+from app.database.models import Account
+from app.models import AddExceptionResponse, AddExceptionRequest
+from app.models.exception import EditExceptionRequest
 from app.models.exceptions import RuleException, AccountRuleException
+from app.models.response.exception import EditExceptionResponse
+from app.security import security_authentication
 
 router = APIRouter(responses={
     401: {"description": "unauthorized/Invalid authentication"},
@@ -142,3 +147,55 @@ async def get_account_upcoming_exceptions(request: Request, account_id: str,
             }
         })
     return return_list
+
+
+@router.post("/add", response_model=AddExceptionResponse)
+async def add_exception(
+        request: Request,
+        exception: AddExceptionRequest,
+        security_profile=Depends(security_authentication)
+):
+    account = await __get_and_check_ids(request, exception.resource_id, exception.rule_id)
+    inserted_id = await request.app.db.add_exception(
+        customer_id=account.customer_id,
+        rule_id=exception.rule_id,
+        last_updated_by=security_profile.session.id,
+        exception_value=exception.exception_value,
+        justification=exception.justification,
+        review_date=exception.review_date,
+        last_updated=datetime.now()
+    )
+    return {"inserted_id": str(inserted_id)}
+
+
+@router.post("/edit/{exception_id}", response_model=EditExceptionResponse)
+async def edit_exception(
+        request: Request,
+        exception: EditExceptionRequest,
+        security_profile=Depends(security_authentication),
+):
+    account = await __get_and_check_ids(request, exception.resource_id, exception.rule_id)
+    await request.app.db.edit_exception(
+
+    )
+
+
+async def __get_and_check_ids(
+        request: Request,
+        resource_id: str,
+        rule_id: str,
+        security_profile=Depends(security_authentication)
+) -> Account:
+    # Getting all the required details
+    if not (resource := await request.app.db.get_resource_by_id(resource_id)):
+        raise HTTPException(status_code=404, detail="Resource not found")
+    if not (await security_profile.check_permissions(resource_account_id=resource.account_id, level=1)):
+        raise HTTPException(status_code=403, detail="Invalid Permissions")
+    if not (account := await request.app.db.get_account_by_id(resource.account_id)):
+        raise HTTPException(status_code=500)
+
+    # Checking that the IDs exist, if they haven't been checked already
+    if not await request.app.db.get_rule_by_id(rule_id):
+        raise HTTPException(status_code=404, detail="Rule not found")
+
+    return resource
