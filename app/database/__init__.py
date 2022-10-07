@@ -44,4 +44,4 @@ class DBConnector:
     from app.database.__nonCompliance import get_non_complaince_by_resource_id, get_non_complaince_by_rule_id
     from app.database.__nonComplianceAudit import get_non_compliance_audit_by_id
     from app.database.__exceptions import get_exception_from_exception_value, get_exception_by_date_account_id, \
-        add_exception
+        add_exception, update_exception
