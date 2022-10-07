@@ -86,6 +86,89 @@ async def get_exception_from_exception_value(self: 'DBConnector', exception_valu
     return return_list
 
 
+async def get_exception_from_exception_id(self: 'DBConnector', exception_id: str) -> Optional[ExceptionPipeline]:
+    """
+    Get exceptions from exception value
+    :param self:
+    :param exception_id: exception ID to get exceptions for
+    :return: list of rule exceptions
+    """
+    try:
+        return_list = []
+        if type(exception_id) == str:
+            exception_id = ObjectId(exception_id)
+        exception_cursor = self._db.exceptions.aggregate([
+            {
+                '$match': {
+                    '_id': exception_id
+                }
+            }, {
+                '$lookup': {
+                    'from': 'rules',
+                    'localField': 'rule_id',
+                    'foreignField': '_id',
+                    'as': 'rule'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$rule'
+                }
+            }, {
+                '$lookup': {
+                    'from': 'resourceTypes',
+                    'localField': 'rule.type_id',
+                    'foreignField': '_id',
+                    'as': 'rule.resource_type'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$rule.resource_type'
+                }
+            }, {
+                '$lookup': {
+                    'from': 'platforms',
+                    'localField': 'rule.resource_type.platform_id',
+                    'foreignField': '_id',
+                    'as': 'rule.resource_type.platform'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$rule.resource_type.platform'
+                }
+            }, {
+                '$lookup': {
+                    'from': 'customers',
+                    'localField': 'customer_id',
+                    'foreignField': '_id',
+                    'as': 'customer'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$customer'
+                }
+            }, {
+                '$lookup': {
+                    'from': 'users',
+                    'localField': 'last_updated_by',
+                    'foreignField': '_id',
+                    'as': 'last_updated_by_user'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$last_updated_by_user'
+                }
+            }
+        ])
+        async for rule_exception in exception_cursor:
+            return_list.append(ExceptionPipeline(rule_exception, self._db))
+        if len(return_list) == 1:
+            return return_list[0]
+        else:
+            raise IndexError("Too many responses")
+    except InvalidId:
+        return None
+
+
 async def get_exception_by_date_account_id(self: 'DBConnector', account_id: Union[str, ObjectId],
                                            start_period: Union[datetime, None] = None,
                                            end_period: Union[datetime, None] = None) -> List[AccountExceptionPipeline]:
@@ -200,7 +283,7 @@ async def add_exception(
         justification: str,
         review_date: datetime,
         last_updated: datetime
-    ) -> ObjectId:
+) -> ObjectId:
     if type(customer_id) == str:
         customer_id = ObjectId(customer_id)
     if type(rule_id) == str:

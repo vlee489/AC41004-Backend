@@ -8,3 +8,4 @@ from .rule import router as rule_router
 from .compliance import router as compliance_router
 from .ruleExceptions import router as exception_router
 from .accountOverview import router as account_overview_router
+from .exemptionAudit import router as exception_audit_router
