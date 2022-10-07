@@ -7,6 +7,8 @@ from .resourceType import ResourceType
 
 class Resource(BaseModel):
     """Resource's details"""
+    id: str = Field(description="Resource's ID")
+    name: str = Field(description="Resource's Name")
     reference: str = Field("Resource platform reference")
     account: Account = Field("Account resource is tied to")
     resource_type: ResourceType = Field(description="resource's type")
@@ -16,6 +18,8 @@ class Resource(BaseModel):
 
 class ExceptionResource(BaseModel):
     """Resource's details for exceptions"""
+    id: str = Field(description="Resource's ID")
+    name: str = Field(description="Resource's Name")
     reference: str = Field("Resource platform reference")
     resource_type: ResourceType = Field(description="resource's type")
     last_updated: datetime = Field(description="Time resource was last updated")
