@@ -4,9 +4,10 @@ from datetime import datetime
 from datetime import timedelta
 from typing import List, Union
 
-from fastapi import APIRouter, Request, HTTPException, Depends
+from fastapi import APIRouter, Request, HTTPException, Depends, BackgroundTasks
 
 from app.database.models import Account
+from app.database.models.input import NewExceptionAudit, UpdateExceptionAudit
 from app.models import AddExceptionResponse, AddExceptionRequest
 from app.models.exception import EditExceptionRequest
 from app.models.exceptions import RuleException, AccountRuleException
@@ -149,54 +150,11 @@ async def get_account_upcoming_exceptions(request: Request, account_id: str,
     return return_list
 
 
-@router.post("/add", response_model=AddExceptionResponse)
-async def add_exception(
-        request: Request,
-        exception: AddExceptionRequest,
-        security_profile=Depends(security_authentication)
-):
-    account = await __get_account_and_check_ids(request, exception.resource_id, exception.rule_id)
-    inserted_id = await request.app.db.add_exception(
-        customer_id=account.customer_id,
-        rule_id=exception.rule_id,
-        last_updated_by=security_profile.session.id,
-        exception_value=exception.exception_value,
-        justification=exception.justification,
-        review_date=exception.review_date,
-        last_updated=datetime.now()
-    )
-    return {"inserted_id": str(inserted_id)}
-
-
-@router.post("/{exception_id}/edit", response_model=EditExceptionResponse)
-async def update_exception(
-        request: Request,
-        exception: EditExceptionRequest,
-        exception_id: str,
-        security_profile=Depends(security_authentication),
-):
-    account = await __get_account_and_check_ids(request, security_profile, exception.resource_id, exception.rule_id)
-    await request.app.db.update_exception(
-        exception_id=exception_id,
-        customer_id=account.customer_id,
-        rule_id=exception.rule_id,
-        last_updated_by=security_profile.session.id,
-        exception_value=exception.exception_value,
-        justification=exception.justification,
-        review_date=exception.review_date,
-        last_updated=datetime.now()
-    )
-    return {"status": True}
-
-
-async def __get_account_and_check_ids(
-        request: Request,
-        security_profile: Depends,
-        resource_id: str,
-        rule_id: str,
-) -> Account:
+@router.post("/", response_model=AddExceptionResponse)
+async def add_exception(request: Request, exception: AddExceptionRequest, background_tasks: BackgroundTasks,
+                        security_profile=Depends(security_authentication)):
     # Getting all the required details
-    if not (resource := await request.app.db.get_resource_by_id(resource_id)):
+    if not (resource := await request.app.db.get_resource_by_id(exception.resource_id)):
         raise HTTPException(status_code=404, detail="Resource not found")
     if not (await security_profile.check_permissions(resource_account_id=resource.account_id, level=1)):
         raise HTTPException(status_code=403, detail="Invalid Permissions")
@@ -204,7 +162,76 @@ async def __get_account_and_check_ids(
         raise HTTPException(status_code=500)
 
     # Checking that the IDs exist, if they haven't been checked already
-    if not await request.app.db.get_rule_by_id(rule_id):
+    if not (rule := await request.app.db.get_rule_by_id(exception.rule_id)):
         raise HTTPException(status_code=404, detail="Rule not found")
+    if rule.resource_type_id != resource.resource_type_id:
+        raise HTTPException(status_code=400, detail="Resource and Rule types do not match!")
 
-    return account
+    inserted_id = await request.app.db.add_exception(
+        customer_id=account.customer_object_id,
+        rule_id=exception.rule_id,
+        last_updated_by=security_profile.session.id,
+        exception_value=resource.reference,  # exception value is linked to the resources reference field
+        justification=exception.justification,
+        review_date=exception.review_date,
+        last_updated=datetime.now()
+    )
+    # Add new exception to Audit log as background task
+    if not (exception_entry := await request.app.db.get_exception_from_exception_id(inserted_id)):
+        raise HTTPException(status_code=500, detail="Unable to add exception")
+    audit = NewExceptionAudit(rule_exception=exception_entry.exception, user_id=security_profile.session.id,
+                              new_value=resource.reference, new_justification=exception.justification,
+                              new_review_date=exception.review_date)
+    background_tasks.add_task(request.app.db.add_exception_audit, new_audit=audit)
+    return {"inserted_id": str(inserted_id)}
+
+
+@router.patch("/{exception_id}", response_model=EditExceptionResponse)
+async def update_exception(request: Request, exception: EditExceptionRequest, exception_id: str,
+                           background_tasks: BackgroundTasks, security_profile=Depends(security_authentication)):
+    # Get and check if exception exists
+    if not (exception_instance := await request.app.db.get_exception_from_exception_id(exception_id)):
+        raise HTTPException(status_code=404, detail="Exception not found")
+    # Check user permissions
+    if not (await security_profile.check_permissions(resource_customer_id=exception_instance.customer.id, level=1)):
+        raise HTTPException(status_code=403, detail="Invalid Permissions")
+    # Update Exception
+    acknowledged = await request.app.db.update_exception(
+        exception_id=exception_id,
+
+        last_updated_by=security_profile.session.id,
+        last_updated=datetime.utcnow(),
+
+        exception_value=exception.exception_value,
+        justification=exception.justification,
+        review_date=exception.review_date
+    )
+    if acknowledged:
+        audit = UpdateExceptionAudit(rule_exception=exception_instance.exception, user_id=security_profile.session.id,
+                                     new_value=exception.exception_value, new_justification=exception.justification,
+                                     new_review_date=exception.review_date)
+        background_tasks.add_task(request.app.db.update_exception_audit, updated_audit=audit)
+        return {"status": True}
+    else:
+        raise HTTPException(status_code=500, detail="DB acknowledgment error")
+
+
+# async def __get_account_and_check_ids(
+#         request: Request,
+#         security_profile: Depends,
+#         resource_id: str,
+#         rule_id: str,
+# ) -> Account:
+#     # Getting all the required details
+#     if not (resource := await request.app.db.get_resource_by_id(resource_id)):
+#         raise HTTPException(status_code=404, detail="Resource not found")
+#     if not (await security_profile.check_permissions(resource_account_id=resource.account_id, level=1)):
+#         raise HTTPException(status_code=403, detail="Invalid Permissions")
+#     if not (account := await request.app.db.get_account_by_id(resource.account_id)):
+#         raise HTTPException(status_code=500)
+#
+#     # Checking that the IDs exist, if they haven't been checked already
+#     if not await request.app.db.get_rule_by_id(rule_id):
+#         raise HTTPException(status_code=404, detail="Rule not found")
+#
+#     return account
