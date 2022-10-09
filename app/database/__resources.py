@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 from bson import ObjectId
 from bson.errors import InvalidId
 
-from app.database.models import Resource, NonComplaintResourceCount
+from app.database.models import Resource, NonComplaintResourceCount, ResourcePipeline
 
 
 async def get_resource_by_id(self: 'DBConnector', resource_id: Union[ObjectId, str]) -> Optional[Resource]:
@@ -27,7 +27,7 @@ async def get_resource_by_id(self: 'DBConnector', resource_id: Union[ObjectId, s
         return None
 
 
-async def get_resources_by_account_id(self: 'DBConnector', account_id: Union[ObjectId, str]) -> List[Resource]:
+async def get_resources_by_account_id(self: 'DBConnector', account_id: Union[ObjectId, str]) -> List[ResourcePipeline]:
     """
     Get Resources with the Account ID
     :param self:
@@ -39,8 +39,70 @@ async def get_resources_by_account_id(self: 'DBConnector', account_id: Union[Obj
         # If ID is a string turn it into an ObjectID
         if type(account_id) is str:
             account_id = ObjectId(account_id)
-        async for r in self._db.resources.find({"account_id": account_id}):
-            resources.append(Resource(r))
+        resource_cursor = self._db.resources.aggregate([
+            {
+                '$match': {
+                    'account_id': account_id
+                }
+            }, {
+                '$lookup': {
+                    'from': 'resourceTypes',
+                    'localField': 'type_id',
+                    'foreignField': '_id',
+                    'as': 'resource_type'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$resource_type'
+                }
+            }, {
+                '$lookup': {
+                    'from': 'accounts',
+                    'localField': 'account_id',
+                    'foreignField': '_id',
+                    'as': 'account'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$account'
+                }
+            }, {
+                '$lookup': {
+                    'from': 'platforms',
+                    'localField': 'account.platform_id',
+                    'foreignField': '_id',
+                    'as': 'account.platform'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$account.platform'
+                }
+            }, {
+                '$lookup': {
+                    'from': 'customers',
+                    'localField': 'account.customer_id',
+                    'foreignField': '_id',
+                    'as': 'account.customer'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$account.customer'
+                }
+            }, {
+                '$lookup': {
+                    'from': 'platforms',
+                    'localField': 'resource_type.platform_id',
+                    'foreignField': '_id',
+                    'as': 'resource_type.platform'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$resource_type.platform'
+                }
+            }
+        ])
+        async for r in resource_cursor:
+            resources.append(ResourcePipeline(r))
         return resources
     except InvalidId:
         return []
