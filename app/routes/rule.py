@@ -23,18 +23,19 @@ async def ger_resource_rules(request: Request, resource_id: str, security_profil
         exceptions = await request.app.db.get_exception_from_exception_value(resource.reference)
         # List Comprehension to get list of rules non-compliant & rule exceptions
         non_compliant_rule_id = [n.rule_id for n in non_compliance]
-        exception_rules_id = [x.rule_resource_type.rule.id for x in exceptions]
+        exception_rules_id = []
+        # Check exception is not suspended before enabling
+        for x in exceptions:
+            if not x.exception.suspended:
+                exception_rules_id.append(x.rule_resource_type.rule.id)
         return_list = []
         for rule_pipline in rules_aggregation:
             # Check if rule is compliant or not
+            compliant, exception = True, False
             if rule_pipline.rule.id in non_compliant_rule_id:
                 compliant = False
-            else:
-                compliant = True
             # See if rule has exception
             if rule_pipline.rule.id in exception_rules_id:
-                exception = False
-            else:
                 exception = True
             return_list.append({
                 "id": rule_pipline.rule.id,
