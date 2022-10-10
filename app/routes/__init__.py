@@ -9,3 +9,4 @@ from .nonComplianceAudit import router as compliance_router
 from .ruleExceptions import router as exception_router
 from .accountOverview import router as account_overview_router
 from .exemptionAudit import router as exception_audit_router
+from .search import router as search_router

@@ -49,3 +49,4 @@ class DBConnector:
         update_exception_audit
     from app.database.__exceptions import get_exception_from_exception_value, get_exception_by_date_account_id, \
         add_exception, update_exception, get_exception_from_exception_id
+    from app.database.__search import search_account_id_resources

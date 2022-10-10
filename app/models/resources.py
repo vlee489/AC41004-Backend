@@ -24,3 +24,12 @@ class ExceptionResource(BaseModel):
     resource_type: ResourceType = Field(description="resource's type")
     last_updated: datetime = Field(description="Time resource was last updated")
     metadata: dict = Field(description="Resource's metadata")
+
+
+class SearchResource(BaseModel):
+    """resource search result"""
+    id: str = Field(description="Resource's ID")
+    name: str = Field(description="Resource's Name")
+    reference: str = Field("Resource platform reference")
+    last_updated: datetime = Field(description="Time resource was last updated")
+    score: float = Field(description="Search Score")
