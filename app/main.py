@@ -116,7 +116,7 @@ def create_app():
         prefix="/compliance",
         tags=["compliance"]
     )
-    
+
     new_app.include_router(
         exception_router,
         prefix="/exceptions",
@@ -141,8 +141,8 @@ def create_app():
             return new_app.openapi_schema
         openapi_schema = get_openapi(
             title="ITP API",
-            description="😶",
-            version="1.0.0",
+            description="AC41004 - Industrial Team Project: Team 1 API Backend",
+            version="Alpha: 1.0.0",
             routes=new_app.routes,
             tags=[
                 {
