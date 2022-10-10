@@ -3,10 +3,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Optional
 if TYPE_CHECKING:
     from .__init__ import DBConnector
-from bson import ObjectId
-from asyncio import create_task
-from dataclasses import asdict
-from datetime import datetime
 
 from app.database.models import User
 

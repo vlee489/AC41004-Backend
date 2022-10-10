@@ -4,7 +4,6 @@ Database module
 This file contains shared & core DB functions.
 """
 import motor.motor_asyncio
-import app.database.models as DBModels
 import certifi
 
 ca = certifi.where()  # Used to deal with TLS certs not loading correctly on certain platforms

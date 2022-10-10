@@ -1,8 +1,7 @@
 """Exception Audit input model class"""
-from dataclasses import dataclass, InitVar, field
+from dataclasses import dataclass, field
 from typing import Optional, List
 from datetime import datetime
-import copy
 from bson import ObjectId
 from bson.errors import InvalidId
 
