@@ -9,9 +9,9 @@ from fastapi import APIRouter, Request, HTTPException, Depends, BackgroundTasks
 from app.database.models import Account
 from app.database.models.input import NewExceptionAudit, UpdateExceptionAudit
 from app.models import AddExceptionResponse, AddExceptionRequest
-from app.models.exception import EditExceptionRequest
+from app.models.exceptions import EditExceptionRequest
 from app.models.exceptions import RuleException, AccountRuleException
-from app.models.response.exception import EditExceptionResponse
+from app.models.response.exceptions import EditExceptionResponse
 from app.security import security_authentication
 
 router = APIRouter(responses={
@@ -174,7 +174,8 @@ async def add_exception(request: Request, exception: AddExceptionRequest, backgr
         exception_value=resource.reference,  # exception value is linked to the resources reference field
         justification=exception.justification,
         review_date=exception.review_date,
-        last_updated=datetime.now()
+        last_updated=datetime.now(),
+        suspended=False,
     )
     # Add new exception to Audit log as background task
     if not (exception_entry := await request.app.db.get_exception_from_exception_id(inserted_id)):
@@ -198,13 +199,12 @@ async def update_exception(request: Request, exception: EditExceptionRequest, ex
     # Update Exception
     acknowledged = await request.app.db.update_exception(
         exception_id=exception_id,
-
         last_updated_by=security_profile.session.id,
         last_updated=datetime.utcnow(),
-
         exception_value=exception.exception_value,
         justification=exception.justification,
-        review_date=exception.review_date
+        review_date=exception.review_date,
+        suspended=exception.suspended if exception.suspended is not None else False
     )
     if acknowledged:
         audit = UpdateExceptionAudit(rule_exception=exception_instance.exception, user_id=security_profile.session.id,
@@ -214,24 +214,3 @@ async def update_exception(request: Request, exception: EditExceptionRequest, ex
         return {"status": True}
     else:
         raise HTTPException(status_code=500, detail="DB acknowledgment error")
-
-
-# async def __get_account_and_check_ids(
-#         request: Request,
-#         security_profile: Depends,
-#         resource_id: str,
-#         rule_id: str,
-# ) -> Account:
-#     # Getting all the required details
-#     if not (resource := await request.app.db.get_resource_by_id(resource_id)):
-#         raise HTTPException(status_code=404, detail="Resource not found")
-#     if not (await security_profile.check_permissions(resource_account_id=resource.account_id, level=1)):
-#         raise HTTPException(status_code=403, detail="Invalid Permissions")
-#     if not (account := await request.app.db.get_account_by_id(resource.account_id)):
-#         raise HTTPException(status_code=500)
-#
-#     # Checking that the IDs exist, if they haven't been checked already
-#     if not await request.app.db.get_rule_by_id(rule_id):
-#         raise HTTPException(status_code=404, detail="Rule not found")
-#
-#     return account
