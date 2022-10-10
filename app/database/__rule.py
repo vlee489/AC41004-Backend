@@ -99,3 +99,35 @@ async def rules_by_resource_type_pipeline(self: 'DBConnector', resource_type_id:
         return return_list
     except InvalidId:
         return []
+
+
+async def get_all_rules_pipeline(self: 'DBConnector') -> List[RuleResourceTypePipeline]:
+    return_list = []
+    rule_cursor = self._db.rules.aggregate([
+            {
+                '$lookup': {
+                    'from': 'resourceTypes',
+                    'localField': 'type_id',
+                    'foreignField': '_id',
+                    'as': 'resource_type'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$resource_type'
+                }
+            }, {
+                '$lookup': {
+                    'from': 'platforms',
+                    'localField': 'resource_type.platform_id',
+                    'foreignField': '_id',
+                    'as': 'resource_type.platform'
+                }
+            }, {
+                '$unwind': {
+                    'path': '$resource_type.platform'
+                }
+            }
+        ])
+    async for rule_aggregation in rule_cursor:
+        return_list.append(RuleResourceTypePipeline(rule_aggregation))
+    return return_list

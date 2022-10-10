@@ -35,11 +35,12 @@ class DBConnector:
     from app.database.__role import get_role_by_id
     from app.database.__customer import get_customer_by_id
     from app.database.__rule import get_rule_by_id, get_all_rules, get_rules_by_resource_type_id, \
-        rules_by_resource_type_pipeline
+        rules_by_resource_type_pipeline, get_all_rules_pipeline
     from app.database.__account import get_account_by_customer_id, get_account_by_id
     from app.database.__platform import get_platform_by_id
     from app.database.__resources import get_resource_by_id, get_resources_by_account_id, \
-        get_non_compliant_resources_by_account_id, get_overview_count_by_account_id
+        get_non_compliant_resources_by_account_id, get_overview_count_by_account_id, \
+        get_resource_by_account_id_and_not_in_id_list
     from app.database.__resourceType import get_resource_type_by_id
     from app.database.__nonCompliance import get_non_complaince_by_resource_id, get_non_complaince_by_rule_id
     from app.database.__nonComplianceAudit import get_non_compliance_audit_by_id, \

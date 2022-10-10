@@ -16,3 +16,5 @@ class NonCompliance:
         self._rule_id = init_data.get("rule_id", "")
         self.rule_id = str(self._rule_id)
 
+
+
