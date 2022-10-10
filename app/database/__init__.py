@@ -42,7 +42,8 @@ class DBConnector:
         get_non_compliant_resources_by_account_id, get_overview_count_by_account_id
     from app.database.__resourceType import get_resource_type_by_id
     from app.database.__nonCompliance import get_non_complaince_by_resource_id, get_non_complaince_by_rule_id
-    from app.database.__nonComplianceAudit import get_non_compliance_audit_by_id
+    from app.database.__nonComplianceAudit import get_non_compliance_audit_by_id, \
+        get_non_compliance_audit_by_resource_id
     from app.database.__exceptionAudit import get_exception_audit_by_exception_id, add_exception_audit, \
         update_exception_audit
     from app.database.__exceptions import get_exception_from_exception_value, get_exception_by_date_account_id, \

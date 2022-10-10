@@ -12,6 +12,7 @@ from .exception import RuleException
 from .resource import Resource
 from .exceptionAudit import ExceptionAudit
 from .account import Account
+from .nonComplianceAudit import NonComplianceAudit
 
 
 @dataclass
@@ -117,3 +118,25 @@ class ResourcePipeline:
             self.account_info = self.AccountPipeline(init_data['account'])
         if "resource_type" in init_data:
             self.resource_type_info = self.ResourceTypePipeline(init_data['resource_type'])
+
+
+@dataclass
+class NonCompliantAuditPipeline:
+    init_data: InitVar[dict]
+    database: InitVar[motor.motor_asyncio.AsyncIOMotorDatabase]
+    non_compliance_audit: NonComplianceAudit = field(init=False, default=None)
+    resource: Optional[ResourcePipeline] = field(init=False, default=None)
+    rule_resource_type: Optional[RuleResourceTypePipeline] = field(init=False, default=None)
+    user: Optional[User] = field(init=False, default=None)
+
+    def __post_init__(self, init_data: dict, database: motor.motor_asyncio.AsyncIOMotorDatabase):
+        self.non_compliance_audit = NonComplianceAudit(init_data)
+        if 'user' in init_data:
+            self.user = User(init_data['user'], database)
+        if 'rule' in init_data:
+            self.rule_resource_type = RuleResourceTypePipeline(init_data['rule'])
+        if 'resource' in init_data:
+            self.resource = ResourcePipeline(init_data['resource'])
+
+
+
