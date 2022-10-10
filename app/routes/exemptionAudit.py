@@ -30,6 +30,8 @@ async def get_exception_audit_by_exemption_id(request: Request, exemption_id: st
                 "new_justification": audit.exception_audit.new_justification,
                 "old_review_date": audit.exception_audit.old_review_date,
                 "new_review_date": audit.exception_audit.new_review_date,
+                "old_suspended": audit.exception_audit.old_suspended,
+                "new_suspended": audit.exception_audit.new_suspended,
                 "user": audit.user.exception_user,
                 "customer": asdict(audit.customer),
                 "rule": {

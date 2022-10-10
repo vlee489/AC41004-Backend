@@ -204,7 +204,7 @@ async def update_exception(request: Request, exception: EditExceptionRequest, ex
         exception_value=exception.exception_value,
         justification=exception.justification,
         review_date=exception.review_date,
-        suspended=exception.suspended if exception.suspended is not None else False
+        suspended=exception.suspended
     )
     if acknowledged:
         audit = UpdateExceptionAudit(rule_exception=exception_instance.exception, user_id=security_profile.session.id,

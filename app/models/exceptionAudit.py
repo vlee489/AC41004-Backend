@@ -29,6 +29,8 @@ class ExceptionAudit(BaseModel):
     new_justification: Optional[str] = Field(description="new justification")
     old_review_date: Optional[datetime] = Field(description="Old review date")
     new_review_date: Optional[datetime] = Field(description="new review date")
+    old_suspended: Optional[bool] = Field(description="Old suspended date")
+    new_suspended: Optional[bool] = Field(description="new suspended date")
 
 
 

@@ -36,4 +36,4 @@ class EditExceptionRequest(BaseModel):
     exception_value: Optional[str] = Field(description="Exception's value", default=None)
     justification: Optional[str] = Field(description="Exception's justification", default=None)
     review_date: Optional[datetime] = Field(description="Exception's next review datetime", default=None)
-    suspended: Optional[bool] = Field(description="Whether the exception is suspended")
+    suspended: Optional[bool] = Field(description="Whether the exception is suspended", default=False)
