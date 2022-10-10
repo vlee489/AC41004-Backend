@@ -15,6 +15,7 @@ class RuleException:
     justification: str = field(init=False, default="")
     review_date: Optional[datetime] = field(init=False)
     last_updated: Optional[datetime] = field(init=False)
+    suspended: bool = field(init=False, default=False)
 
     def __post_init__(self, init_data: dict):
         self._id = init_data.get("_id", "")
@@ -33,6 +34,7 @@ class RuleException:
         self.justification = init_data.get("justification", "")
         self.review_date = init_data.get("review_date", None)
         self.last_updated = init_data.get("last_updated", None)
+        self.suspended = init_data.get("suspended", False)
 
     @property
     def object_id(self) -> objectid.ObjectId:

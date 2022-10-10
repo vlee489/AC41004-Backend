@@ -1,1 +1,1 @@
-from .exception import AddExceptionResponse
+from .exceptions import AddExceptionResponse

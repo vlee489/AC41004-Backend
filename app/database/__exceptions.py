@@ -161,7 +161,9 @@ async def get_exception_from_exception_id(self: 'DBConnector', exception_id: str
         ])
         async for rule_exception in exception_cursor:
             return_list.append(ExceptionPipeline(rule_exception, self._db))
-        if len(return_list) == 1:
+        if len(return_list) == 0:
+            return None
+        elif len(return_list) == 1:
             return return_list[0]
         else:
             raise IndexError("Too many responses")
@@ -282,7 +284,8 @@ async def add_exception(
         exception_value: str,
         justification: str,
         review_date: datetime,
-        last_updated: datetime
+        last_updated: datetime,
+        suspended: bool,
 ) -> ObjectId:
     if type(customer_id) == str:
         customer_id = ObjectId(customer_id)
@@ -297,21 +300,23 @@ async def add_exception(
         "exception_value": exception_value,
         "justification": justification,
         "review_date": review_date,
-        "last_updated": last_updated
+        "last_updated": last_updated,
+        "suspended": suspended,
     })).inserted_id
 
 
 async def update_exception(self: 'DBConnector', exception_id: Union[ObjectId, str],
                            last_updated_by: Union[ObjectId, str], last_updated: datetime,
                            exception_value: Optional[str], justification: Optional[str],
-                           review_date: Optional[datetime]) -> bool:
+                           review_date: Optional[datetime], suspended: bool) -> bool:
     if type(exception_id) == str:
         exception_id = ObjectId(exception_id)
     if type(last_updated_by) == str:
         last_updated_by = ObjectId(last_updated_by)
     update = {
         "last_updated_by": last_updated_by,
-        "last_updated": last_updated
+        "last_updated": last_updated,
+        "suspended": suspended,
     }
     if exception_value is not None:
         update["exception_value"] = exception_value

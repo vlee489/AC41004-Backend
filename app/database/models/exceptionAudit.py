@@ -25,6 +25,9 @@ class ExceptionAudit:
     old_review_date: Optional[datetime] = field(init=False, default=None)
     new_review_date: Optional[datetime] = field(init=False, default=None)
 
+    old_suspended: Optional[bool] = field(init=False, default=None)
+    new_suspended: Optional[bool] = field(init=False, default=None)
+
     def __post_init__(self, init_data: dict):
         self._id = init_data.get("_id", "")
         self.id = str(self._id)
@@ -50,6 +53,9 @@ class ExceptionAudit:
         self.new_justification = init_data.get("new_justification", None)
         self.old_review_date = init_data.get("old_review_date", None)
         self.new_review_date = init_data.get("new_review_date", None)
+
+        self.old_suspended = init_data.get("old_suspended", None)
+        self.new_suspended = init_data.get("new_suspended", None)
 
     @property
     def object_id(self) -> objectid.ObjectId:

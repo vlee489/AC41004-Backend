@@ -50,6 +50,7 @@ class UpdateExceptionAudit:
     new_value: Optional[str] = field(default=None)
     new_justification: Optional[str] = field(default=None)
     new_review_date: Optional[datetime] = field(default=None)
+    new_suspended_state: Optional[bool] = field(default=None)
 
     def __post_init__(self):
         self.action_datetime = datetime.utcnow()
@@ -87,6 +88,13 @@ class UpdateExceptionAudit:
                     "action_dt": self.action_datetime,
                     "new_review_date": self.new_review_date,
                     "old_review_date": self.rule_exception.review_date,
+                }, **base_dict))
+            if self.new_suspended_state is not None:
+                new_audit.append(dict({
+                    "action": "update_suspended",
+                    "action_dt": self.action_datetime,
+                    "new_suspended": self.new_suspended_state,
+                    "old_suspended": self.rule_exception.suspended,
                 }, **base_dict))
         except InvalidId:
             pass
