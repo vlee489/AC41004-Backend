@@ -135,6 +135,12 @@ def create_app():
         tags=["exception audit"]
     )
 
+    new_app.include_router(
+        search_router,
+        prefix="/search",
+        tags=["search"]
+    )
+
     # Define OpenAPI info
     def custom_openapi():
         if new_app.openapi_schema:
@@ -184,6 +190,10 @@ def create_app():
                 {
                     "name": "exception audit",
                     "description": "Audit log for exception"
+                },
+                {
+                    "name": "search",
+                    "description": "Search engine"
                 }
             ]
         )

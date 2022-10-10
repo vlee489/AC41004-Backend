@@ -35,3 +35,18 @@ class Resource(Base):
 class NonComplaintResourceCount:
     compliant: int
     non_compliant: int
+
+
+@dataclass
+class SearchResource(Base):
+    reference: str = field(init=False, default="")
+    last_updated: Optional[datetime] = field(init=False, default=None)
+    score: float = field(init=False, default=0.0)
+    
+    def __post_init__(self, init_data: dict):
+        super().__post_init__(init_data)
+        self.reference = init_data.get("reference", "")
+        self.last_updated = init_data.get("last_updated", None)
+        self.score = init_data.get('score', 0.0)
+
+
