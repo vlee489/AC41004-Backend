@@ -42,7 +42,7 @@ class ExceptionAudit:
         self.rule_id = str(self._rule_id)
 
         self.action = init_data.get("action")
-        self.action_datetime = init_data.get("action_datetime")
+        self.action_datetime = init_data.get("action_dt")
 
         self.old_value = init_data.get("old_value", None)
         self.new_value = init_data.get("new_value", None)

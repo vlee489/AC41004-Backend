@@ -21,8 +21,10 @@ async def ger_resource_rules(request: Request, resource_id: str, security_profil
             HTTPException(status_code=403, detail="Invalid Permissions")
         rules_aggregation = await request.app.db.rules_by_resource_type_pipeline(resource.resource_type_id)
         non_compliance = await request.app.db.get_non_complaince_by_resource_id(resource.id)
-        # List Comprehension to get list of rules non-compliant
+        exceptions = await request.app.db.get_exception_from_exception_value(resource.reference)
+        # List Comprehension to get list of rules non-compliant & rule exceptions
         non_compliant_rule_id = [n.rule_id for n in non_compliance]
+        exception_rules_id = [x.rule_resource_type.rule.id for x in exceptions]
         return_list = []
         for rule_pipline in rules_aggregation:
             # Check if rule is compliant or not
@@ -30,11 +32,17 @@ async def ger_resource_rules(request: Request, resource_id: str, security_profil
                 compliant = False
             else:
                 compliant = True
+            # See if rule has exception
+            if rule_pipline.rule.id in exception_rules_id:
+                exception = False
+            else:
+                exception = True
             return_list.append({
                 "id": rule_pipline.rule.id,
                 "name": rule_pipline.rule.name,
                 "description": rule_pipline.rule.description,
                 "compliant": compliant,
+                "exception": exception,
                 "resource_type": {
                     "id": rule_pipline.resource_type.id,
                     "name": rule_pipline.resource_type.name,
