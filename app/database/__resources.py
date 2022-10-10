@@ -27,6 +27,32 @@ async def get_resource_by_id(self: 'DBConnector', resource_id: Union[ObjectId, s
         return None
 
 
+async def get_resource_by_account_id_and_not_in_id_list(self: 'DBConnector', resource_ids: List[ObjectId],
+                                                        account_id: Union[ObjectId, str],
+                                                        type_id: Union[ObjectId, str]) -> List[Resource]:
+    """
+    Get Resource that are not in a list of IDs
+    :param account_id:
+    :param self:
+    :param resource_ids: List of Resource's ID
+    :return:
+    """
+    try:
+        # If ID is a string turn it into an ObjectID
+        if type(account_id) is str:
+            account_id = ObjectId(account_id)
+        if type(type_id) is str:
+            type_id = ObjectId(type_id)
+        resource_list = []
+        resource_cursor = self._db.resources.find(
+            {"_id": {"$nin": resource_ids}, "account_id": account_id, "type_id": type_id})
+        async for resource in resource_cursor:
+            resource_list.append(Resource(resource))
+        return resource_list
+    except InvalidId:
+        return []
+
+
 async def get_resources_by_account_id(self: 'DBConnector', account_id: Union[ObjectId, str]) -> List[ResourcePipeline]:
     """
     Get Resources with the Account ID
