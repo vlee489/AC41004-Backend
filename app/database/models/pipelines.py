@@ -11,6 +11,7 @@ from .user import User
 from .exception import RuleException
 from .resource import Resource
 from .exceptionAudit import ExceptionAudit
+from .account import Account
 
 
 @dataclass
@@ -77,3 +78,42 @@ class ExceptionAuditPipeline:
         if 'rule' in init_data:
             self.rule_resource_type = RuleResourceTypePipeline(init_data['rule'])
 
+
+@dataclass
+class ResourcePipeline:
+    @dataclass
+    class AccountPipeline:
+        init_data: InitVar[dict]
+        account: Account = field(init=False, default=None)
+        customer: Optional[Customer] = field(init=False, default=None)
+        platform: Optional[Platform] = field(init=False, default=None)
+
+        def __post_init__(self, init_data: dict):
+            self.account = Account(init_data)
+            if "customer" in init_data:
+                self.customer = Customer(init_data['customer'])
+            if "platform" in init_data:
+                self.platform = Platform(init_data["platform"])
+
+    @dataclass
+    class ResourceTypePipeline:
+        init_data: InitVar[dict]
+        resource_type: ResourceType = field(init=False, default=None)
+        platform: Optional[Platform] = field(init=False, default=None)
+
+        def __post_init__(self, init_data: dict):
+            self.resource_type = ResourceType(init_data)
+            if "platform" in init_data:
+                self.platform = Platform(init_data["platform"])
+
+    init_data: InitVar[dict]
+    resource: Resource = field(init=False)
+    account_info: Optional[AccountPipeline] = field(init=False, default=None)
+    resource_type_info: Optional[ResourceTypePipeline] = field(init=False, default=None)
+
+    def __post_init__(self, init_data: dict):
+        self.resource = Resource(init_data)
+        if "account" in init_data:
+            self.account_info = self.AccountPipeline(init_data['account'])
+        if "resource_type" in init_data:
+            self.resource_type_info = self.ResourceTypePipeline(init_data['resource_type'])
