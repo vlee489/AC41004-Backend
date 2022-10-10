@@ -6,7 +6,6 @@ from typing import List, Union
 
 from fastapi import APIRouter, Request, HTTPException, Depends, BackgroundTasks
 
-from app.database.models import Account
 from app.database.models.input import NewExceptionAudit, UpdateExceptionAudit
 from app.models import AddExceptionResponse, AddExceptionRequest
 from app.models.exceptions import EditExceptionRequest

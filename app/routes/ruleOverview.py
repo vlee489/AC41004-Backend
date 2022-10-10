@@ -1,5 +1,5 @@
 """Routes for rules overview"""
-from fastapi import APIRouter, Request, HTTPException, Depends, Query
+from fastapi import APIRouter, Request, HTTPException, Depends
 from typing import List
 from dataclasses import asdict
 from bson import ObjectId

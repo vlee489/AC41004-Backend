@@ -1,5 +1,5 @@
 """Routes for searching"""
-from fastapi import APIRouter, Request, HTTPException, Depends, Query
+from fastapi import APIRouter, Request, HTTPException, Depends
 from typing import List
 from dataclasses import asdict
 

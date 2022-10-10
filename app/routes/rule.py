@@ -1,7 +1,6 @@
 """Routes for user rules"""
-from fastapi import APIRouter, Request, HTTPException, Depends, Query
+from fastapi import APIRouter, Request, HTTPException, Depends
 from typing import List
-from dataclasses import asdict
 
 from app.security import security_authentication
 from app.models.rule import Rule, ResourceRule
