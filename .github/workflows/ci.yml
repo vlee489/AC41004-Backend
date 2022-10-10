@@ -21,4 +21,5 @@ jobs:
           script: |
             cd AC41004-Backend/
             git pull
-            docker compose up -d --build
+            docker compose build --no-cache --progress plain
+            docker compose up -d
