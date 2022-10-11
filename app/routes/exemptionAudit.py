@@ -18,6 +18,9 @@ async def get_exception_audit_by_exemption_id(request: Request, exemption_id: st
     try:
         if not (exemption := await request.app.db.get_exception_from_exception_id(exemption_id)):
             raise HTTPException(status_code=404, detail="exemption not found")
+        # Check user permissions
+        if not (await security_profile.check_permissions(resource_customer_id=exemption.customer.id, level=0)):
+            raise HTTPException(status_code=403, detail="Invalid Permissions")
         audits = await request.app.db.get_exception_audit_by_exception_id(exemption_id)
         return_list = []
         for audit in audits:
