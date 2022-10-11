@@ -198,6 +198,8 @@ async def update_exception(request: Request, exception: EditExceptionRequest, ex
     # Check user permissions
     if not (await security_profile.check_permissions(resource_customer_id=exception_instance.customer.id, level=1)):
         raise HTTPException(status_code=403, detail="Invalid Permissions")
+    if exception_instance.exception.suspended:
+        raise HTTPException(status_code=400, detail="Exception Suspended, patch not allowed")
     # Update Exception
     acknowledged = await request.app.db.update_exception(
         exception_id=exception_id,
