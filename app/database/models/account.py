@@ -1,5 +1,5 @@
 """Customer Account DB Model"""
-from dataclasses import dataclass, InitVar, field
+from dataclasses import dataclass, field
 from bson import objectid
 
 from .base import Base

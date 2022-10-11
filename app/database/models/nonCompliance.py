@@ -1,6 +1,5 @@
 """Non-compliance DB Model"""
 from dataclasses import dataclass, InitVar, field
-from bson import objectid
 
 
 @dataclass

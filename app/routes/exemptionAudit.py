@@ -1,6 +1,6 @@
 """Routes for managing exceptions"""
 from dataclasses import asdict
-from fastapi import APIRouter, Request, HTTPException, Depends, Query
+from fastapi import APIRouter, Request, HTTPException, Depends
 from typing import List
 from app.models.exceptionAudit import ExceptionAudit
 from app.security import security_authentication

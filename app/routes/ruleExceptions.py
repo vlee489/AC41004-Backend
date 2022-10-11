@@ -6,7 +6,6 @@ from typing import List, Union
 
 from fastapi import APIRouter, Request, HTTPException, Depends, BackgroundTasks
 
-from app.database.models import Account
 from app.database.models.input import NewExceptionAudit, UpdateExceptionAudit
 from app.models import AddExceptionResponse, AddExceptionRequest
 from app.models.exceptions import EditExceptionRequest
@@ -27,7 +26,7 @@ async def get_resource_exceptions(request: Request, resource_id: str,
     if resource := await request.app.db.get_resource_by_id(resource_id):
         # Check if user has permission
         if not (await security_profile.check_permissions(resource_account_id=resource.account_id, level=0)):
-            HTTPException(status_code=403, detail="Invalid Permissions")
+            raise HTTPException(status_code=403, detail="Invalid Permissions")
         rule_exceptions = await request.app.db.get_exception_from_exception_value(resource.reference)
         return_list = []
         for rule_exception in rule_exceptions:
@@ -65,7 +64,7 @@ async def get_account_overdue_exceptions(request: Request, account_id: str,
     """Get exceptions overdue for review"""
     # Check if user has permission
     if not (await security_profile.check_permissions(resource_account_id=account_id, level=0)):
-        HTTPException(status_code=403, detail="Invalid Permissions")
+        raise HTTPException(status_code=403, detail="Invalid Permissions")
     now = datetime.utcnow()
     rule_exceptions = await request.app.db.get_exception_by_date_account_id(account_id, None, now)
     return_list = []

@@ -1,5 +1,5 @@
 """Routes for user login & logout"""
-from fastapi import APIRouter, Request, HTTPException, Depends, Query
+from fastapi import APIRouter, Request, HTTPException, Depends
 from dataclasses import asdict
 
 from app.security import security_authentication
