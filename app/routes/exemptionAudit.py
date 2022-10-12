@@ -27,6 +27,7 @@ async def get_exception_audit_by_exemption_id(request: Request, exemption_id: st
             return_list.append({
                 "id": audit.exception_audit.id,
                 "action": audit.exception_audit.action,
+                "action_datetime": audit.exception_audit.action_datetime,
                 "old_value": audit.exception_audit.old_value,
                 "new_value": audit.exception_audit.new_value,
                 "old_justification": audit.exception_audit.old_justification,

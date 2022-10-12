@@ -22,6 +22,7 @@ class ExceptionAudit(BaseModel):
     customer: Customer = Field(description="Customer exception audit is for")
     rule: Rule = Field(description="Rule exception applies to")
     action: str = Field(description="action that occurred")
+    action_datetime: datetime = Field(description="when the action occurred")
 
     old_value: Optional[str] = Field(description="Old exception value")
     new_value: Optional[str] = Field(description="New exception value")
