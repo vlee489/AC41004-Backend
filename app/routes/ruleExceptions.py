@@ -245,7 +245,7 @@ async def update_exception(request: Request, exception: EditExceptionRequest, ex
     if acknowledged:
         audit = UpdateExceptionAudit(rule_exception=exception_instance.exception, user_id=security_profile.session.id,
                                      new_value=exception.exception_value, new_justification=exception.justification,
-                                     new_review_date=exception.review_date)
+                                     new_review_date=exception.review_date, new_suspended_state=exception.suspended)
         background_tasks.add_task(request.app.db.update_exception_audit, updated_audit=audit)
         return {"status": True}
     else:
