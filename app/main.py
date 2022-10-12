@@ -19,7 +19,9 @@ origins = [
     "http://localhost",
     "file:///",
     "http://localhost:63342",
-    "http://127.0.0.1:5500"
+    "http://127.0.0.1:5500",
+    "https://ac41004.vlee.me.uk",
+    "https://ac41004-frontend.pages.dev/"
 ]
 
 # Initialize logging
