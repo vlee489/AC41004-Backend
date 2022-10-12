@@ -58,6 +58,40 @@ async def get_resource_exceptions(request: Request, resource_id: str,
         raise HTTPException(status_code=404, detail="Resource not found")
 
 
+@router.get('/{exception_id}', response_model=RuleException)
+async def get_exception_by_id(request: Request, exception_id: str, security_profile=Depends(security_authentication)):
+    """Get exception by ID"""
+    if rule_exceptions := await request.app.db.get_exception_from_exception_id(exception_id):
+        # Check if user has permission
+        if not (await security_profile.check_permissions(resource_customer_id=rule_exceptions.customer.id, level=0)):
+            raise HTTPException(status_code=403, detail="Invalid Permissions")
+        return {
+            "id": rule_exceptions.exception.id,
+            "exception_value": rule_exceptions.exception.exception_value,
+            "justification": rule_exceptions.exception.justification,
+            "review_date": rule_exceptions.exception.review_date,
+            "last_updated": rule_exceptions.exception.last_updated,
+            "last_updated_by": rule_exceptions.user.exception_user,
+            "suspended": rule_exceptions.exception.suspended,
+            "customer": asdict(rule_exceptions.customer),
+            "rule": {
+                "id": rule_exceptions.rule_resource_type.rule.id,
+                "name": rule_exceptions.rule_resource_type.rule.name,
+                "description": rule_exceptions.rule_resource_type.rule.description,
+                "resource_type": {
+                    "id": rule_exceptions.rule_resource_type.resource_type.id,
+                    "name": rule_exceptions.rule_resource_type.resource_type.name,
+                    "platform": {
+                        "id": rule_exceptions.rule_resource_type.platform.id,
+                        "name": rule_exceptions.rule_resource_type.platform.name,
+                    }
+                }
+            }
+        }
+    else:
+        raise HTTPException(status_code=404, detail="not found")
+
+
 @router.get('/account/{account_id}/overdue', response_model=List[AccountRuleException])
 async def get_account_overdue_exceptions(request: Request, account_id: str,
                                          security_profile=Depends(security_authentication)):
