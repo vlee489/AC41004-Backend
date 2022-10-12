@@ -83,7 +83,7 @@ class UpdateExceptionAudit:
                 }, **base_dict))
             if self.new_review_date:
                 new_audit.append(dict({
-                    "action": "update_justification",
+                    "action": "update_review_date",
                     "action_dt": self.action_datetime,
                     "new_review_date": self.new_review_date,
                     "old_review_date": self.rule_exception.review_date,
