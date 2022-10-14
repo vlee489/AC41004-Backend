@@ -187,16 +187,18 @@ async def get_exception_by_date_account_id(self: 'DBConnector', account_id: Unio
         return_list = []
         if type(account_id) is str:
             account_id = ObjectId(account_id)
+        query = {"suspended": False}
         date_period = {}
         if start_period:
             date_period["$gte"] = start_period
         if end_period:
             date_period["$lt"] = end_period
         if date_period:
-            date_period = {'review_date': date_period}
+            query['review_date'] = date_period
+
         exception_cursor = self._db.exceptions.aggregate([
             {
-                '$match': date_period
+                '$match': query
             }, {
                 '$lookup': {
                     'from': 'resources',
